@@ -70,6 +70,7 @@ namespace Template
                 Spelare2skottpos[i] = Spelare2skottpos[i] - new Vector2(0, 5);
             }
 
+
             //Gör så att spelaren inte kan komma utanför skärmen
             if (Spelare2pos.X <= 0)
                 Spelare2pos.X = 0;

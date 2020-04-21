@@ -23,9 +23,15 @@ namespace Template
             get { return storlekSpelare1; }
             set { storlekSpelare1 = value; }
         }
+        
 
-        private List<Vector2> Spelare1skottpos = new List<Vector2>();
-        private List<Vector2> RandomEnemySpawn = new List<Vector2>();
+        private static List<Vector2> Spelare1skottpos = new List<Vector2>();
+   
+        public List<Vector2> Spelare1skottPos
+        {
+            get { return Spelare1skottpos; }
+            set { Spelare1skottpos = value; }
+        }
 
         private KeyboardState kNewstate, kOldstate;
 
@@ -83,7 +89,7 @@ namespace Template
 
 
             //skott för Spelare1 spriten
-            if (a.IsKeyDown(Keys.Space) && kOldstate.IsKeyUp(Keys.Space))
+            if (a.IsKeyDown(Keys.Space) && kOldstate.IsKeyDown(Keys.Space))
             {
                 Spelare1skottpos.Add(spelare1pos + new Vector2(10, 0));
             }
@@ -91,7 +97,6 @@ namespace Template
             {
                 Spelare1skottpos[i] = Spelare1skottpos[i] - new Vector2(0, 5);
             }
-            for (int i = 0; i < RandomEnemySpawn.Count; i++);
         }
 
         public void Draw(SpriteBatch spriteBatch)//Draw

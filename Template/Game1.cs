@@ -11,13 +11,21 @@ namespace Template
    
         Spelare s1 = new Spelare();
         Spelare1 s2 = new Spelare1();
-        Fiende F = new Fiende();
-       
+   
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-        private static bool quit;
-        private Texture2D background;
 
+        private Random rnd = new Random();
+
+        private int EnemySpawnPos = 0, EnemyTimer = 0, SpawnRate = 60;
+
+
+        private Texture2D background, EnemySpawn;
+
+        private Vector2 spelare1pos, Spelare2pos;
+
+        private List<Vector2> RandomEnemySpawn = new List<Vector2>();
+        
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -26,10 +34,9 @@ namespace Template
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             s1.Initialize();
             s2.Initialize();
-            F.Initialize();
+        
             
             graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
             graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
@@ -43,7 +50,7 @@ namespace Template
 
             s1.LoadContent(Content);
             s2.LoadContent(Content);
-            F.LoadContent(Content);
+            EnemySpawn = Content.Load<Texture2D>("EnemySpawn");
             background = Content.Load<Texture2D>("background");
    
         }
@@ -55,20 +62,65 @@ namespace Template
 
         protected override void Update(GameTime gameTime)
         {
-            if (quit == true)
-            {
-                Exit();
-            }
-            
             KeyboardState a = Keyboard.GetState();
 
-            // om man trycker på escape så avslutas gamet
+            // om man trycker på escape så avslutas monogame
             if (a.IsKeyDown(Keys.Escape))
                 Exit();
         
             s1.Update(gameTime);
             s2.Update(gameTime);
-            F.Update(gameTime);
+      
+
+
+            //Om Spawnrate är över 15 så kommer den minska med 5 var 10 sekund, 10s = enemytimer 600
+            if (SpawnRate > 15)
+            {
+                EnemyTimer++;
+                if (EnemyTimer == 120)
+                {
+                    SpawnRate -= 5;
+                    EnemyTimer = 0;
+                }
+            }
+            //Om Spawnrate är 5<x<15 så kommer den minska med 1 var 10 sekund, 10s = enemytimer 600
+            if (SpawnRate <= 15 && SpawnRate > 5)
+            {
+                EnemyTimer++;
+                if (EnemyTimer == 120)
+                {
+                    SpawnRate -= 1;
+                    EnemyTimer = 0;
+                }
+            }
+            EnemySpawnPos = rnd.Next(0, 1800);
+            if (rnd.Next(0, SpawnRate) == 0)
+            {
+                RandomEnemySpawn.Add(new Vector2(EnemySpawnPos, 0));
+            }
+            for (int i = 0; i < RandomEnemySpawn.Count; i++)
+            {
+                RandomEnemySpawn[i] = RandomEnemySpawn[i] - new Vector2(0, -2);
+                Rectangle rec = new Rectangle((int)RandomEnemySpawn[i].X, (int)RandomEnemySpawn[i].Y, 30, 50);
+                Rectangle storlekSpelare1 = new Rectangle((int)spelare1pos.X, (int)spelare1pos.Y, 130, 130);
+                if (s1.StorlekSpelare1.Intersects(rec))
+                {
+                    Exit();
+                }
+            }
+
+            
+
+            for (int i = 0; i < RandomEnemySpawn.Count; i++)
+            {
+                RandomEnemySpawn[i] = RandomEnemySpawn[i] - new Vector2(0, -2);
+                Rectangle rec = new Rectangle((int)RandomEnemySpawn[i].X, (int)RandomEnemySpawn[i].Y, 30, 50);
+                Rectangle storlekSpelare2 = new Rectangle((int)Spelare2pos.X, (int)Spelare2pos.Y, 130, 130);
+                if (s2.StorlekSpelare2.Intersects(rec))
+                {
+                    Exit();
+                }
+            }
 
             base.Update(gameTime);
         }
@@ -79,16 +131,18 @@ namespace Template
             spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.DisplayMode.Width, GraphicsDevice.DisplayMode.Height), Color.White);
             s1.Draw(spriteBatch);
             s2.Draw(spriteBatch);
-            F.Draw(spriteBatch);
            
-            spriteBatch.End();
+            foreach (Vector2 RandomEnemySpawn in RandomEnemySpawn)
+            {
+                Rectangle rec = new Rectangle();
+                rec.Location = RandomEnemySpawn.ToPoint();
+                rec.Size = new Point(80, 80);
+                spriteBatch.Draw(EnemySpawn, rec, Color.White);
+            }
 
             base.Draw(gameTime);
-        }
 
-        public static void Quit()
-        {
-            quit = true;
+            spriteBatch.End();
         }
     }
 }
