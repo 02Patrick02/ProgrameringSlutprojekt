@@ -89,7 +89,7 @@ namespace Template
 
 
             //skott för Spelare1 spriten
-            if (a.IsKeyDown(Keys.Space) && kOldstate.IsKeyDown(Keys.Space))
+            if (a.IsKeyDown(Keys.Space) && kOldstate.IsKeyUp(Keys.Space))
             {
                 Spelare1skottpos.Add(spelare1pos + new Vector2(10, 0));
             }

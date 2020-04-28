@@ -17,14 +17,15 @@ namespace Template
 
         private Random rnd = new Random();
 
-        private int EnemySpawnPos = 0, EnemyTimer = 0, SpawnRate = 60;
+        private int EnemySpawnPos = 0, EnemyTimer = 0, SpawnRate = 60, PowerTimer = 0, Spawnratepower = 1000, PowerPos = 0;
 
 
-        private Texture2D background, EnemySpawn;
+        private Texture2D background, EnemySpawn, Power;
 
         private Vector2 spelare1pos, Spelare2pos;
 
         private List<Vector2> RandomEnemySpawn = new List<Vector2>();
+        private List<Vector2> RandomPowerSpawn = new List<Vector2>();
         
         public Game1()
         {
@@ -52,6 +53,9 @@ namespace Template
             s2.LoadContent(Content);
             EnemySpawn = Content.Load<Texture2D>("EnemySpawn");
             background = Content.Load<Texture2D>("background");
+            Power = Content.Load<Texture2D>("Power");
+            
+
    
         }
 
@@ -98,6 +102,7 @@ namespace Template
             {
                 RandomEnemySpawn.Add(new Vector2(EnemySpawnPos, 0));
             }
+
             for (int i = 0; i < RandomEnemySpawn.Count; i++)
             {
                 RandomEnemySpawn[i] = RandomEnemySpawn[i] - new Vector2(0, -2);
@@ -109,7 +114,6 @@ namespace Template
                 }
             }
 
-            
 
             for (int i = 0; i < RandomEnemySpawn.Count; i++)
             {
@@ -122,6 +126,31 @@ namespace Template
                 }
             }
 
+            if(Spawnratepower > 15)
+            {
+                PowerTimer++;
+                if(PowerTimer == 10)
+                {
+                    Spawnratepower -= 1;
+                    PowerTimer = 0;
+                }
+            }
+
+            if(Spawnratepower <= 1)
+            {
+                PowerTimer++;
+                if(PowerTimer == 10)
+                {
+                    Spawnratepower -= 1;
+                    PowerTimer = 0;
+                }
+            }
+            PowerPos = rnd.Next(0, 1900);
+            if (rnd.Next(0, Spawnratepower) == 0)
+            {
+                RandomPowerSpawn.Add(new Vector2 (rnd.Next(0, 1900), rnd.Next(0, 950)));
+            }
+
             base.Update(gameTime);
         }
 
@@ -129,6 +158,7 @@ namespace Template
         {
             spriteBatch.Begin();
             spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.DisplayMode.Width, GraphicsDevice.DisplayMode.Height), Color.White);
+            spriteBatch.Draw(Power, new Rectangle(GraphicsDevice.DisplayMode.Width, GraphicsDevice.DisplayMode.Height, 0, 0), Color.White);
             s1.Draw(spriteBatch);
             s2.Draw(spriteBatch);
            
@@ -139,6 +169,14 @@ namespace Template
                 rec.Size = new Point(80, 80);
                 spriteBatch.Draw(EnemySpawn, rec, Color.White);
             }
+            foreach (Vector2 RandomPowerSpawn in RandomPowerSpawn)
+            {
+                Rectangle rec = new Rectangle();
+                rec.Location = RandomPowerSpawn.ToPoint();
+                rec.Size = new Point(80, 80);
+                spriteBatch.Draw(Power, rec, Color.White);
+            }
+
 
             base.Draw(gameTime);
 
